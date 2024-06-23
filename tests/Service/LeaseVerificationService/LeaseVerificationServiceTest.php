@@ -5,30 +5,27 @@ namespace SlaveMarket\Service\LeaseVerificationService;
 use PHPUnit\Framework\TestCase;
 use SlaveMarket\Lease\ILeaseContractsRepository;
 use SlaveMarket\Lease\LeaseRequest;
+use SlaveMarket\Lease\LeaseResponse;
 use SlaveMarket\LeaseRules\SlaveAvailabilityRule;
 use SlaveMarket\LeaseRules\SlaveMaxHoursRule;
 
 class LeaseVerificationServiceTest extends TestCase
 {
 
-    public function testIsAvailable()
+    public function test_IsAvailable()
     {
         //arrange
         {
             //Мок Правил доступности раба.
-            $slaveAvailabilityRuleMock = $this->createMock(SlaveAvailabilityRule::class)->method(
-                'isSlaveAvailable'
-            )->willReturn(true);
+            $slaveAvailabilityRuleMock = $this->createMock(SlaveAvailabilityRule::class);
+            $slaveAvailabilityRuleMock->method('isSlaveAvailable')->willReturn(true);
 
             //Мок правил максимума рабочей нормы
-            $slaveMaxHoursRule = $this->createMock(SlaveMaxHoursRule::class)->method('isMaxHoursNotExceed')->willReturn(
-                true
-            );
+            $slaveMaxHoursRule = $this->createMock(SlaveMaxHoursRule::class);
+            $slaveMaxHoursRule->method('isMaxHoursNotExceed')->willReturn(true);
 
             //Мок репозитория контрактов
-            $leaseContractsRepository = $this->createMock(ILeaseContractsRepository::class)->method(
-                'isSlaveAvailable'
-            )->willReturn(true);
+            $leaseContractsRepository = $this->createMock(ILeaseContractsRepository::class);
 
             $leaseVerificationService = new LeaseVerificationService(
                 $slaveAvailabilityRuleMock,
@@ -44,8 +41,9 @@ class LeaseVerificationServiceTest extends TestCase
         }
 
         //act
-        $leaseVerificationService->isAvailable($leaseRequest);
+        $response = $leaseVerificationService->isAvailable($leaseRequest);
 
-        $this->assertTrue(true);
+        $this->assertInstanceOf(LeaseResponse::class, $response);
+        $this->assertEmpty($response->getErrors());
     }
 }
