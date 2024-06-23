@@ -2,6 +2,7 @@
 
 namespace SlaveMarket\Lease;
 
+use DateTime;
 use SlaveMarket\Master;
 use SlaveMarket\Slave;
 
@@ -26,9 +27,22 @@ class LeaseContract
 
     public function __construct(Master $master, Slave $slave, float $price, array $leasedHours)
     {
-        $this->master      = $master;
-        $this->slave       = $slave;
-        $this->price       = $price;
+        $this->master = $master;
+        $this->slave = $slave;
+        $this->price = $price;
         $this->leasedHours = $leasedHours;
+    }
+
+    public function getLeasedHoursByDay(DateTime $day)
+    {
+        $leasedHours = [];
+
+        foreach ($this->leasedHours as $leasedHour) {
+            if ($day->format('Y-m-d') === $leasedHour->getDate()) {
+                $leasedHours[] = $leasedHour;
+            }
+        }
+
+        return $leasedHours;
     }
 }

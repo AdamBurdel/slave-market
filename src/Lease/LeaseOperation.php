@@ -2,8 +2,10 @@
 
 namespace SlaveMarket\Lease;
 
-use SlaveMarket\MastersRepository;
-use SlaveMarket\SlavesRepository;
+use SlaveMarket\IMastersRepository;
+use SlaveMarket\ISlavesRepository;
+use SlaveMarket\Service\LeaseOperationService\ILeaseOperationService;
+use SlaveMarket\Service\LeaseVerificationService\ILeaseVerificationService;
 
 /**
  * Операция "Арендовать раба"
@@ -13,32 +15,27 @@ use SlaveMarket\SlavesRepository;
 class LeaseOperation
 {
     /**
-     * @var LeaseContractsRepository
+     * @var ILeaseVerificationService
      */
-    protected $contractsRepository;
-
+    private $leaseOperationService;
     /**
-     * @var MastersRepository
+     * @var ILeaseVerificationService
      */
-    protected $mastersRepository;
-
-    /**
-     * @var SlavesRepository
-     */
-    protected $slavesRepository;
+    private $leaseValidationService;
 
     /**
      * LeaseOperation constructor.
      *
-     * @param LeaseContractsRepository $contractsRepo
-     * @param MastersRepository $mastersRepo
-     * @param SlavesRepository $slavesRepo
+     * @param ILeaseContractsRepository $contractsRepo
+     * @param IMastersRepository $mastersRepo
+     * @param ISlavesRepository $slavesRepo
      */
-    public function __construct(LeaseContractsRepository $contractsRepo, MastersRepository $mastersRepo, SlavesRepository $slavesRepo)
-    {
-        $this->contractsRepository = $contractsRepo;
-        $this->mastersRepository   = $mastersRepo;
-        $this->slavesRepository    = $slavesRepo;
+    public function __construct(
+        ILeaseOperationService $leaseOperationService,
+        ILeaseVerificationService $leaseValidationService
+    ) {
+        $this->leaseOperationService = $leaseOperationService;
+        $this->leaseValidationService = $leaseValidationService;
     }
 
     /**
@@ -49,6 +46,15 @@ class LeaseOperation
      */
     public function run(LeaseRequest $request): LeaseResponse
     {
-        // Your code here :-)
+
+        $leaseResponse = $this->leaseValidationService->isAvailable($request);
+        if (!empty($leaseResponse->getErrors())) {
+            return $leaseResponse;
+        }
+
+        $leaseContract = $this->leaseOperationService->lease($request);
+        $leaseResponse->setLeaseContract($leaseContract);
+
+        return $leaseResponse;
     }
 }
