@@ -4,7 +4,6 @@ namespace SlaveMarket\Service\LeaseVerificationService;
 
 use SlaveMarket\Helper\DateTimeRoundHelper;
 use SlaveMarket\Lease\ILeaseContractsRepository;
-use SlaveMarket\Lease\LeaseContractsRepository;
 use SlaveMarket\Lease\LeaseRequest;
 use SlaveMarket\Lease\LeaseResponse;
 use SlaveMarket\LeaseRules\SlaveAvailabilityRule;
@@ -66,9 +65,7 @@ class LeaseVerificationService implements ILeaseVerificationService
 
 
         } catch (\Exception $exception) {
-            foreach ($this->errors as $error) {
-                $leaseResponse->addError($error);
-            }
+            $leaseResponse->addError($exception->getMessage());
         }
 
         return $leaseResponse;
