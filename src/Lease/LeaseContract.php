@@ -2,6 +2,8 @@
 
 namespace SlaveMarket\Lease;
 
+use DateInterval;
+use DatePeriod;
 use DateTime;
 use SlaveMarket\Master;
 use SlaveMarket\Slave;
@@ -20,12 +22,12 @@ class LeaseContract
     public $slave;
 
     /** @var float Стоимость */
-    public $price = 0;
+    public $price = null;
 
     /** @var LeaseHour[] Список арендованных часов */
     public $leasedHours = [];
 
-    public function __construct(Master $master, Slave $slave, float $price, array $leasedHours)
+    public function __construct(Master $master, Slave $slave, ?float $price, array $leasedHours)
     {
         $this->master = $master;
         $this->slave = $slave;
@@ -44,5 +46,26 @@ class LeaseContract
         }
 
         return $leasedHours;
+    }
+
+    public function addHours(DateTime $dateFrom, DateTime $dateTo)
+    {
+        $periodInHours = new DatePeriod(
+            $dateFrom,
+            new DateInterval('PT1H'),
+            $dateTo
+        );
+
+        $hours = [];
+        foreach ($periodInHours as $datetime) {
+            $hours[] = $datetime;
+        }
+
+        $leasedHours = [];
+        foreach ($hours as $hour) {
+            $leasedHours[] = new LeaseHour($hour->format('Y-m-d H'));
+        }
+
+        $this->leasedHours = $leasedHours;
     }
 }

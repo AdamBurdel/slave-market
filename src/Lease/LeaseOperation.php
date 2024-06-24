@@ -2,10 +2,9 @@
 
 namespace SlaveMarket\Lease;
 
-use SlaveMarket\IMastersRepository;
-use SlaveMarket\ISlavesRepository;
-use SlaveMarket\Service\LeaseOperationService\ILeaseOperationService;
+use SlaveMarket\Service\LeaseOperationService\LeaseOperationService;
 use SlaveMarket\Service\LeaseVerificationService\ILeaseVerificationService;
+use SlaveMarket\Service\LeaseVerificationService\LeaseVerificationService;
 
 /**
  * Операция "Арендовать раба"
@@ -21,21 +20,20 @@ class LeaseOperation
     /**
      * @var ILeaseVerificationService
      */
-    private $leaseValidationService;
+    private $leaseVerificationService;
 
     /**
      * LeaseOperation constructor.
      *
-     * @param ILeaseContractsRepository $contractsRepo
-     * @param IMastersRepository $mastersRepo
-     * @param ISlavesRepository $slavesRepo
+     * @param LeaseOperationService $leaseOperationService
+     * @param LeaseVerificationService $leaseVerificationService
      */
     public function __construct(
-        ILeaseOperationService $leaseOperationService,
-        ILeaseVerificationService $leaseValidationService
+        LeaseOperationService $leaseOperationService,
+        LeaseVerificationService $leaseVerificationService
     ) {
         $this->leaseOperationService = $leaseOperationService;
-        $this->leaseValidationService = $leaseValidationService;
+        $this->leaseVerificationService = $leaseVerificationService;
     }
 
     /**
@@ -46,8 +44,7 @@ class LeaseOperation
      */
     public function run(LeaseRequest $request): LeaseResponse
     {
-
-        $leaseResponse = $this->leaseValidationService->isAvailable($request);
+        $leaseResponse = $this->leaseVerificationService->isAvailable($request);
         if (!empty($leaseResponse->getErrors())) {
             return $leaseResponse;
         }

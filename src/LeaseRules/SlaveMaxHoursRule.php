@@ -27,7 +27,6 @@ class SlaveMaxHoursRule
         $dateTo = new DateTime($dateTo);
 
         //Получаем кол-во дней для аренды по датам
-
         $firstDay = DateTime::createFromFormat('Y-m-d H', $dateFrom->format('Y-m-d 00'));
         $lastDay = DateTime::createFromFormat('Y-m-d H', $dateTo->format('Y-m-d 23'));
 
