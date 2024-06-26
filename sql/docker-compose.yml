@@ -1,0 +1,15 @@
+version: '3'
+services:
+  ###> doctrine/doctrine-bundle ###
+  database:
+    image: postgres:${POSTGRES_VERSION:-13}-alpine
+    environment:
+      POSTGRES_DB: test_db
+      POSTGRES_PASSWORD: test_pass
+      POSTGRES_USER: test_user
+    volumes:
+      - db-data:/var/lib/postgresql/data:rw
+    ports:
+      - 5432:5432
+volumes:
+  db-data:
